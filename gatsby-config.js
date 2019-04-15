@@ -3,7 +3,7 @@ module.exports = {
     title: `AD Programming Blog`,
     author: `AD Programming`,
     description: `A blog on various front end development topics.`,
-    siteUrl: `https://gatsby-starter-blog-demo.netlify.com/`,
+    siteUrl: `https://flamboyant-hoover-c88f12.netlify.com/`,
     social: {
       twitter: `aurimasdarguzis`,
       github: `aurimas-darguzis`,
