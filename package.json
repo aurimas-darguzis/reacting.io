@@ -1,9 +1,9 @@
 {
-  "name": "gatsby-starter-blog",
+  "name": "ad-programming-blog",
   "private": true,
-  "description": "A starter for a blog powered by Gatsby and Markdown",
+  "description": "A blog about various topics that ad programming is interested in",
   "version": "0.1.0",
-  "author": "Kyle Mathews <mathews.kyle@gmail.com>",
+  "author": "ad programming <aurimas.darguzis@adprogramming.com>",
   "bugs": {
     "url": "https://github.com/gatsbyjs/gatsby/issues"
   },
