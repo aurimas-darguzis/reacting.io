@@ -1,12 +1,13 @@
 module.exports = {
   siteMetadata: {
-    title: `AD Programming Blog`,
-    author: `AD Programming`,
+    title: `Front end blog`,
+    author: `Aurimas Darguzis`,
     description: `A blog on various front end development topics.`,
     siteUrl: `https://flamboyant-hoover-c88f12.netlify.com/`,
     social: {
       twitter: `aurimasdarguzis`,
       github: `aurimas-darguzis`,
+      linkedIn: `in/aurimas-dargužis-4b251a5b/`,
     },
   },
   plugins: [
