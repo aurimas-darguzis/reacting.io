@@ -1,6 +1,6 @@
 module.exports = {
   siteMetadata: {
-    title: `Front end blog`,
+    title: `AD blog`,
     author: `Aurimas Darguzis`,
     description: `A blog on various front end development topics.`,
     siteUrl: `https://flamboyant-hoover-c88f12.netlify.com/`,
