@@ -1,6 +1,6 @@
 ---
-title: 3 ways to build modal component in React
-date: "2019-04-18T15:26:03.284Z"
+title: three ways to build modal component in React
+date: "2019-05-18T15:26:03.284Z"
 ---
 
 This is my first post on my new fake blog! How exciting!
