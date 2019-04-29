@@ -13,6 +13,8 @@ A disclaimer - I didn't invent these recipes myself. I rather gathered them from
 - Presentation/Container Components
 - Render Props
 
+All these patterns have to do with managing state. I think it was Kyle Simpson who said - 90% of bugs come from improper state management. If you truly understand the state in your app that means you will be able to have a fine-grained control over your app.
+
 ---
 
 ## Cookbook Recipe #1: Context API
@@ -197,3 +199,131 @@ Couple things you can notice right away is that we can use functional component 
 - You find your component bloated - it has hundreds and hundreds lines of code
 
 ---
+
+## Cookbook Recipe #3: Render Props
+
+This recipe is actually a part of React documentation.
+
+### Why would you use it?
+
+I want to illustrate it with an example. Let's imagine you need to build a voting app for adorable puppies. And the user can open the app and vote if a dog is adorable or incredibly adorable. So you start building your app and the first thing you build is a puppy feed component and call the API to get the puppies. You would start with the list of things you need to do:
+
+1. GET /api/puppies
+2. Surface 'loading' spinner
+3. Render adorable puppies
+4. If error, render error
+
+You are super happy about the work you've done. Everything is well tested, users are happy.. but the manager comes to you and asks to do the same thing, but instead of puppies - do it with kittens. Well, 'no problem' you think. We just follow the similar pattern and do something like:
+
+1. GET /api/`kittens`
+2. Surface 'loading' spinner
+3. Render adorable `kittens`
+4. If error, render error
+
+And you are thinking - 'interesting, it's like we're doing the same thing twice'. We are doing kind of the same thing, but in once case we render puppies and in another case - kittens. You put your DRY (do not repeat yourself) hat on, you get very excited because this is a perfect abstraction opportunity here. And you go about this by creating a `<Petfeed />` component. The way it is going to work, is by passing different prop to this component.
+
+```jsx
+<Petfeed pet='kittens' />
+<Petfeed pet='kittens' />
+```
+
+After you celebrate your perfect quality code - the next feature request comes in - we need to have a user profile component. The user profile is going to do a few things:
+
+1. GET /api/`profile`
+2. Surface 'loading' spinner
+3. Render `user's profile`
+4. If error, render error
+
+We have a problem here. We cannot reuse the Petfeed component here simply because with the user profile we are not going to have a gallery of adorable pets. So how to use PetFeed component here? On top of that - while you are thinking about the implementation of this new feature, another request comes in - depending on if it's loading a puppies or kittens - we want to show different spinner. So now maybe you think you need a conditional statement in Petfeed component and you start to feel that this component will start to become a spaghetti code and not so reusable and extendible afterall. It's an abstraction that isn't working anymore. On top of that - we can't even use it for the user settings page either.
+
+### Why did this happened?
+
+Tight coupling of logic and presentation made our component less reusable and flexible. Because we connected the logic and the presentation together we kind of got backed into a corner prematurely.
+
+### Solution
+
+`Render props` - a simple technique for sharing code between React components. You have some logic and you have a bunch of components that wants to use that logic, so you need to use this render props to share it. It looks like this:
+
+```jsx
+<MyComponent render={data => <div>{data}</div>} />
+```
+
+The way we can use this, we need to realise what common things our components has:
+
+- request data from API
+- need loading states
+- have error states
+
+But they differ in a way that they render different things and need to render different spinners, different error states. We have all these different presentational concerns that we're not going to know about until they come back from the API. We want to deffer the decision-making around what they look like to the latest time possible. So they have common logic and different presentation.
+
+The way we are going to resolve this issue is by renaming our `<Petfeed />` component to `<Resource />`.
+
+When doing a render prop approach what we need to do in Resource component, in the `render()` method we call `this.props.render(this.state)` and we pass data from the state that we care about later. It can containt puppies, kittens or user settings. Essentially it's going to contain an API payload of data and we want to know wheter it's currently loading.
+
+```jsx
+class Resource extends Component {
+  state = {
+    loading: false,
+    payload: [],
+  }
+
+  componentDidMount() {
+    this.setState({ loading: true })
+    axios.get(this.props.path).then(res => {
+      this.setState({
+        payload: res.data,
+        loading: false,
+      })
+    })
+  }
+
+  render() {
+    return this.props.render(this.state)
+  }
+}
+```
+
+The way we use this is strightforward. The `path` prop (the one we used in componentDidMount earlier) tells us what endpoint we pass render prop here, that has a payload with it. The payload contains the state of the resource component.
+
+```jsx
+<Resource
+  path="/api/puppies"
+  render={data => {
+    if (data.loading) return <p>Loading Puppies...</p>
+    return data.payload.map(puppy => <div>{puppy}</div>)
+  }}
+/>
+```
+
+We have access to all the props that was passed in. What it means that we can actually defer the decision-making around how these components render to the specific place that we want them to render.
+The user profile page which is completely different than the other ones, all that logic around requesting, loading, etc, that can all be handled by the resource component and we can have completely different style of presentation
+
+```jsx
+<Resource
+  path='/api/profilee'
+  render={data => {
+    if (data.loading) return <p>Loading Profile...</p>
+    return (
+      <div>
+        <h1>{data.payload.name}</h1>
+      </div>
+    )
+  }}
+```
+
+### Why render props are so important
+
+- self document incredibly well
+- separate presentation from logic
+- decrease code duplication
+- extrendible
+- reusable
+- abstract away logic
+
+### when to use them
+
+- Don't start with a render prop. Start simple and refactor later - if you start early you will get this wrong. The reason why you will get this wrong is because you don't know the use case yet.
+- Share logic between components but not UI
+- Other developers to re-use your code
+- Defer rendering UI to a later date
+- Dealing with common states/events in different components
