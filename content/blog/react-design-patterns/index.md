@@ -94,3 +94,106 @@ Huge benefit of this pattern is essentially we're eliminating this issue of prop
 - General Theme Provider - if you want to have a specific styling that you want to manage and many different levels inside of an app
 
 ---
+
+## Cookbook Recipe #2: Presentation / Container components
+
+Imagine you need to build a weather widget component. In terms to build it - you probably need to think of 2 things at the begining - `request` data from some weather API and `display` that data on the page. Seems like a simple task, and you would probably start to go about it like so:
+
+```jsx
+class WeatherWidget extends React.Component {
+  state = { weather: null }
+
+  componentDidMount() {
+    // fetch weather data
+    getWeather().then(weather => {
+      this.setState({ weather })
+    })
+  }
+
+  render() {
+    // display weather data
+    return (
+      <div>
+        <h1>
+          {weahter.city} - {weather.country}
+        </h1>
+        <ul>
+          <li>{weather.temp}</li>
+          <li>{weather.description}</li>
+        </ul>
+      </div>
+    )
+  }
+}
+```
+
+And this is fine, you probably would think that your component here is really small, portable, etc.. but what happens over time - you need to do more stuff. You might need to add a 12 day forecast, be able to show Fahrenheit and Celsius and all kinds of other things about the weather. And then you start to expand your component and it ends up looking a little bit like 200-300 lines of code component. Essentially it would be a bloated component - just simply too big.
+
+### Problem
+
+- Component is difficult to reason about - you look at it and think: "wtf is going on here..?"
+- It is hard to modify and reuse it - you try and change it and it starts to break and can't use in other places because it's so specific to the current situation
+- Undfriendly to other developers - feels like no one can touch this component unless is ready to deal with consequences
+
+### Solution
+
+Let's introduce a `separation of concerns`. It is an incredibly powerful concept when it comes to web application architecture and just programming in general. What is a concern? Well, it is something your code is responsible for, something your code cares about.
+
+If we think about the weather widget component it kind of cares about two things - fetching the data and displaying it. So these are the two concerns. The idea of fetching data is a logic based concer. It is responsible for managing state - requesting the data from the API and then displaying that data on the screen - that's a UI concern, it has to do with a visual representation of it. So we can take these two kind of disparate but connected things and we actually separate them into two different components.
+
+First we have our container component. It will be responsible for managing the logic of our weather widget. In other words - what the component actually does. In weather widget case - the responsibility is to get the data from API and store it to the state. And we should call this component `<WeatherWidgetContainer>...</WeatherWidgetContainer>`
+
+Then we have the presentation component - responsible for a user interface. It should answer the question - "What the component looks like".
+
+What should happen naturally, is that the container component should render the widget component and pass in any data that the widget needs to know about.
+
+```jsx
+class WeatherWidgetContainer extends React.Component {
+  state = { weather: null }
+
+  componentDidMount() {
+    getWeather().then(weather => {
+      this.setState({ weather })
+    })
+  }
+
+  render() {
+    return <WeatherWidget weather={this.state.weather} />
+  }
+}
+```
+
+Then, the `WeatherWidget` component should look like this. As you can see the only concern for this component is to receive props and render them to the screen.
+
+```jsx
+const WeatherWidget = props => {
+  const { weather } = props
+  return (
+    <div>
+      <h1>
+        {weather.city} - {weather.country}
+      </h1>
+      <ul>
+        <li>{weather.temp}</li>
+        <li>{weather.description}</li>
+      </ul>
+    </div>
+  )
+}
+```
+
+Couple things you can notice right away is that we can use functional component for displaying UI. There is no need for a class based component, here is no state to manage and there are no life cycle methods we need to take care of. What that means, that this component is much more simple and therefore much easier to reason about.
+
+### Why this pattern is useful?
+
+- Enhance readability - you can find bugs easier, because if there's an issue with the API, you know which component to go to and fix it. Same goes for the UI - if there's a glitch or some component doesn't display data correctly - you will know where to go.
+- Reusability - technically you can reuse this component in other places of your app. Just one thing that I need to mention is - it will need to receive identical props as it would from the current container and that might be problematic.
+- Testable - for presentational component we can do snapshot testing, mock the props that are being passed in and then you have a total coverage on that component. For the container component we can introduce unit test with more of a kind of logical based approach.
+
+### When to use this recipe?
+
+- When your component is doing too many things
+- There is a mixture of behaviour and presentation
+- You find your component bloated - it has hundreds and hundreds lines of code
+
+---
