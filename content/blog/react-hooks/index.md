@@ -60,7 +60,7 @@ npm install eslint-plugin-react-hooks --save-dev
 }
 ```
 
-## Using the State Hook
+## Example: Using the State Hook
 
 Let's start learnign about state Hook by comparing code to an equivalent class example
 
@@ -136,7 +136,7 @@ function Example() {
 
 We import `useState` Hook from React. It lets us keep local state in a function component. Inside the `Example` component we declase a new state variable and a method to update it. We also pass initial value for the state property when we call `useState(0)`. When a user clicks button, we call `setPrice` with a new value. React then re-render the `Example` component, passing the new `price` value to it.
 
-### Tip: What do square brackets mean?
+### What do square brackets mean?
 
 ```jsx
 const [price, setPrice] = useState(0)
@@ -152,7 +152,7 @@ const setPrice = priceStateVariable[1] // Second item in a pair
 
 When we declare a state variable with `useState`, it returns a pair - an array with two items. The first item is the current value, and the second is a function that lets us update it.
 
-# Tip: Using multiple state variables
+### Using multiple state variables
 
 We are not bound to using just one state variable declaration in our component. We can use as many as we need:
 
@@ -173,3 +173,70 @@ function handleAppleClick() {
 ```
 
 You don't have to use many state variables. State variables can hold objects and arrays just fine, so you can still group related data together. However, unlike `this.setState` in a class, updating a state variable always replcaes it instead of merging it.
+
+### Should you use Hooks, classes or a mix of both?
+
+According to official React documentation - it's highly encouraged to start using Hooks in new components that you write. There is no need to rewrite class components into using Hooks though. Both concepts can get along just fine, as long as you don't mix them up in a single file. You can definitely mix classes and function components with Hooks in a single tree. React team stated that their goal is for Hooks to cover all use cases for classes as soon as possible. It is still an early time for Hooks, and some third-party libraries might not be compatible with them at the moment.
+
+## Example: How to test components that use Hooks?
+
+A component using Hooks is just a regular React component. It shouldn't be different from how you normallu test your components. Let's take counter component as an example:
+
+```jsx
+function TestExample() {
+  const [count, setCount] useState(0)
+  useEffect(() => {
+    document.title = `You clicked ${count} times`
+  })
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me!
+      </button>
+  )
+}
+```
+
+Let's test this code snippet using React DOM. To make sure that the behavior matches what happens in the browser, let's wrap the code rendering and updating it inot `ReactTestUtils.act()` calls:
+
+```jsx
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { act } from 'react-dom/test-utils'
+import Counter from './Counter'
+
+let container;
+
+beforeEach(() => {
+  container = document.createElement('div')
+  container.body.appendChild(container)
+})
+
+afterEach(() => {
+  document.body.removeChild(container)
+  container = null
+})
+
+it('can render and update a counter', () => {
+  act(() => {
+    ReactDOM.render(<Counter />, container)
+  })
+  const button = container.querySelector('button')
+  const label = container.querySelector('p')
+  expect(label.textContent).toBe('You clicked 0 times')
+  expect(document.title).toBe('You clicked 0 times')
+
+  act(() => {
+    button.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+  })
+  expect(label.textContent).toBe('You clicked 0 times')
+  expect(document.title).toBe('You clicked 0 times')
+})
+```
+
+The calls to `act()` will also flush the effects inside of them.
+
+If you need to test a custom Hook, you can do so by creating a component in your test, and using your Hook from it. Then you can test the component you wrote.
+
+To reduce the boilerplate, it's recommended using `react-testing-library` which is designed to encourage writing tests that use your components as the end users do.
