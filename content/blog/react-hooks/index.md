@@ -15,7 +15,7 @@ If you look at a typical React application, you will likely find a "wrapper hell
 
 Components always starts simple but grows into stateful logic with side effects in no time. Each lifecycle method contains a mix of unrelated logic. We do data fetching in `componentDidMount` and `componentDidUpdate`. Sometimes the same `componentDidMount` method contains unrelated logic that sets up an event listener, which cleanup performed in `componentWillUnmount`. Related code that changes together gets split apart, and completely unrelated code ends up combined in a single method. It's an easy way to introduce bugs and inconsistencies.
 
-When components logic is all over the place - it is difficult to test them, hard to break into smaller pieces. Hence engineers prefer to combine React with a state management library. This comes with a lot boiler plate code, introducing too much of abstraction, to achieve a task usualy you need to open few files. This makes resuing of component more difficult.
+When components logic is all over the place - it is difficult to test them, hard to break into smaller pieces. Hence engineers prefer to combine React with a state management library. This comes with a lot boiler plate code, introducing too much of abstraction, to achieve a task usualy you need to open few files. This makes reusing of component more difficult.
 
 Hooks let you split one component into smaller functions based on what pieces are related - such as setting up a subscription or fetching data, rather than forcing a split based on lifecycle methods. To make state more predictable you can opt into managing the component's local state with a reducer.
 
