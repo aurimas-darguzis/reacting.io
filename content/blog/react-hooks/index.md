@@ -198,18 +198,18 @@ function TestExample() {
 }
 ```
 
-Let's test this code snippet using React DOM. To make sure that the behavior matches what happens in the browser, let's wrap the code rendering and updating it inot `ReactTestUtils.act()` calls:
+Let's test this code snippet using React DOM. To make sure that the behavior matches what happens in the browser, let's wrap the code rendering and updating it into `ReactTestUtils.act()` calls:
 
 ```jsx
-import React from 'react'
-import ReactDOM from 'react-dom'
-import { act } from 'react-dom/test-utils'
-import Counter from './Counter'
+import React from "react"
+import ReactDOM from "react-dom"
+import { act } from "react-dom/test-utils"
+import Counter from "./Counter"
 
-let container;
+let container
 
 beforeEach(() => {
-  container = document.createElement('div')
+  container = document.createElement("div")
   container.body.appendChild(container)
 })
 
@@ -218,20 +218,20 @@ afterEach(() => {
   container = null
 })
 
-it('can render and update a counter', () => {
+it("can render and update a counter", () => {
   act(() => {
     ReactDOM.render(<Counter />, container)
   })
-  const button = container.querySelector('button')
-  const label = container.querySelector('p')
-  expect(label.textContent).toBe('You clicked 0 times')
-  expect(document.title).toBe('You clicked 0 times')
+  const button = container.querySelector("button")
+  const label = container.querySelector("p")
+  expect(label.textContent).toBe("You clicked 0 times")
+  expect(document.title).toBe("You clicked 0 times")
 
   act(() => {
-    button.dispatchEvent(new MouseEvent('click', { bubbles: true }))
+    button.dispatchEvent(new MouseEvent("click", { bubbles: true }))
   })
-  expect(label.textContent).toBe('You clicked 0 times')
-  expect(document.title).toBe('You clicked 0 times')
+  expect(label.textContent).toBe("You clicked 0 times")
+  expect(document.title).toBe("You clicked 0 times")
 })
 ```
 
