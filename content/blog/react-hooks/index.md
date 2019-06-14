@@ -29,7 +29,7 @@ Conceptually, React components have always been closer to functions. Hooks embra
 
 ### 1. Only call Hooks at the top level
 
-Never call Hooks inside loops, conditions, or nested functions. Instead we need to use Hooks at the top level of React function. This ensures that Hooks are called in the same order each time a component renders. That's what allows React to correctly preserve the state of Hooks between multiple `useState` and `useEffect` calls.
+Never call Hooks inside loops, conditions, or nested functions. Instead we need to use Hooks at the top level of React function. This ensures that Hooks are called in the same order each time a component renders. That's what allows React to correctly preserve the state of Hooks between multiple `useState` and `useEffect` calls. If you want to get a deeper understanding on why the order matters - I explained it in [demystifying hooks](https://reacting.io/react-demystifying-hooks/) blog post.
 
 ### 2. Only call Hooks from React functions
 
