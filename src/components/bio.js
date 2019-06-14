@@ -10,6 +10,7 @@ import { StaticQuery, graphql } from "gatsby"
 import Image from "gatsby-image"
 
 import { rhythm } from "../utils/typography"
+import { OutboundLink } from "gatsby-plugin-google-analytics"
 
 function Bio() {
   return (
@@ -39,9 +40,9 @@ function Bio() {
             />
             <p>
               Personal blog by
-              <a href={`https://linkedin.com/${social.linkedIn}`}>
+              <OutboundLink href={`https://linkedin.com/${social.linkedIn}`}>
                 <strong> {author} </strong>
-              </a>
+              </OutboundLink>
               who lives and works in London building useful things.
             </p>
           </div>
