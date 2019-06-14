@@ -1,4 +1,4 @@
-Link - https://flamboyant-hoover-c88f12.netlify.com/
+Link - https://reacting.io
 
 <p align="center">
   <a href="https://www.gatsbyjs.org">
@@ -11,4 +11,4 @@ Link - https://flamboyant-hoover-c88f12.netlify.com/
 
 ## 🧐 What's inside?
 
-Blog posts about React, JavaScript and other Front End solutions
+Blog posts about React, UI/UX, motivation.
