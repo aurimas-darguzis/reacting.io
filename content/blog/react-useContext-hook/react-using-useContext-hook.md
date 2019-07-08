@@ -29,111 +29,41 @@ const MyContext = React.createContext(defaultValue)
 
 ## Example
 
-Let's store a user and share the data between two sybiling components.
-
-First let's create `userContext.js` file
-
-```jsx
-import { createContext } from "react"
-export const UserContext = createContext(null)
-```
-
-`App.js`
+The best to illustrate is to set up an example and show a real-ish use case for the context. Let's say we have an app, where our users can book a room in a hotel. And as developers we decide not to use something like redux, but actually we want to implement contex API for the tas. Let's start by creating our own `context.js` file. First step is easy and strightforward - initialise a context.
 
 ```jsx
 import React from "react"
-import { BrowserRouter as Router, Route, Link } from "react-router-dom"
-import { Index } from "./pages"
-import { About } from "./pages"
-import { UserContext } from "./UserContext"
 
-const value = useMemo(() => ({ user, setUser }), [user, setUser])
+const RoomContext = React.createContext()
+```
 
-function AppRouter() {
-  return (
+To use context throughout the app we need to wrap our component tree into `RoomContext.Provider` and pass a value to it. But, we can also have a provider in the same `context.js` file. This gives us way more flexibility - we can get the data in the same file, adjust it as we need it to and pass it on.
+
+```jsx
+export default function RoomProvider() {
+  return <RoomContext.Provider value={"hello"}>{children}</RoomContext.Provider>
+}
+
+export default RoomConsumer = RoomContext.Consumer
+```
+
+To be able to access context throughout our application, we can place wrap provider at the top level of our application:
+
+```jsx
+import React from "react"
+import ReactDOM from "react-dom"
+import App from "./App"
+import { BrowserRouter as Router } from "react-router-dom"
+import { RoomProvider } from "./context"
+
+ReactDOM.render(
+  <RoomProvider>
     <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/about">About</Link>
-            </li>
-          </ul>
-        </nav>
-
-        <UserContext.Provider value={value}>
-          <Route path="/" exact component={Index} />
-          <Route path="/about" component={About} />
-        </UserContext.Provider>
-      </div>
+      <App />
     </Router>
-  )
-}
+  </RoomProvider>,
+  document.getElementById("root")
+)
 ```
 
-`index.js`
-
-```jsx
-import React, { useContext } from "react"
-import { UserContext } from "../UserContext"
-
-export function Index() {
-  const { user, setUser } = useContext(UserContext)
-
-  return (
-    <div>
-      <h2>Home</h2>
-      <pre>{JSON.stringify(user, null, 2)}</pre>
-      {user ? (
-        <button
-          onClick={() => {
-            // call logout
-            setUser(null)
-          }}
-        >
-          logout
-        </button>
-      ) : (
-        <button
-          onClick={async () => {
-            const user = await login()
-            setUser(user)
-          }}
-        >
-          login
-        </button>
-      )}
-    </div>
-  )
-}
-
-const login = async () => {
-  return {
-    id: 7,
-    username: "aurimas",
-    email: "aurim@s.com",
-  }
-}
-```
-
-`about.js`
-
-```jsx
-
-import React, { useContext } from "react";
-import { UserContext } from "../UserContext";
-
-export function About() {
-  const { user } = useContext(UserContext);
-
-  return (
-    <div>
-      <h2>About</h2>
-      <pre>{JSON.stringify(user, null, 2)}</pre>
-    </div>
-  );
-
-```
+https://www.youtube.com/watch?v=ScDWrogElmo 1h:46min
