@@ -7,7 +7,7 @@ Context is designed to share data that can be considered “global” for a tree
 
 ## API building blocks
 
-- `context` object is holding the current context value and can be subscribed to. First step is to create a context with a call to `React.createContext()` - this will return a Context object. If you like to pass a default value - simply pass it in the `createContext({id: 1, category: nutrition })` like so. You are free to pass anything you want. It will probably end up being an object with few properties on it, or an array that you later on will iterate to create items on the screen. This can be a response from http call, or just internal state object.
+- `context` object is holding the current context value and can be subscribed to. First step is to create a context with a call to `React.createContext()` - this will return a Context object. If you like to pass a default value - simply pass it in the `createContext({id: 1, category: nutrition })` like so. You are free to pass anything you want. From my personal experience it can be eather a response from http call or internal app state, that replaced redux from quite a few projects.
 
 ```js
 const MyContext = React.createContext(defaultValue)
@@ -29,41 +29,99 @@ const MyContext = React.createContext(defaultValue)
 
 ## Example
 
-The best to illustrate is to set up an example and show a real-ish use case for the context. Let's say we have an app, where our users can book a room in a hotel. And as developers we decide not to use something like redux, but actually we want to implement contex API for the tas. Let's start by creating our own `context.js` file. First step is easy and strightforward - initialise a context.
+### Getting ready
+
+The best to illustrate is with an example. Let's build an app to book a workout activity. Create a new file called `activityContext.js`. This will be a React component that acts as a wrapper where we set up the Context, and also return that Context's Provider for us to wrap our other components.
 
 ```jsx
-import React from "react"
+import React, { useState } from "react"
 
-const RoomContext = React.createContext()
-```
+const ActivityContext = React.createContext()
 
-To use context throughout the app we need to wrap our component tree into `RoomContext.Provider` and pass a value to it. But, we can also have a provider in the same `context.js` file. This gives us way more flexibility - we can get the data in the same file, adjust it as we need it to and pass it on.
-
-```jsx
-export default function RoomProvider() {
-  return <RoomContext.Provider value={"hello"}>{children}</RoomContext.Provider>
+const ActivityProvider = props => {
+  const [state, setState] = useState({
+    gymClasses: [
+      {
+        name: "Vinyasa Flow Yoga",
+        booked: false,
+      },
+      {
+        name: "Boxing",
+        booked: false,
+      },
+      {
+        name: "TRX Training",
+        booked: false,
+      },
+    ],
+  })
+  return (
+    <ActivityContext.Provider value={[state, setState]}>
+      {props.children}
+    </ActivityContext.Provider>
+  )
 }
 
-export default RoomConsumer = RoomContext.Consumer
+export { ActivityContext, ActivityProvider }
 ```
 
-To be able to access context throughout our application, we can place wrap provider at the top level of our application:
+We created a new Context called `ActivityContext` with no arguments - so there is no default value for the context.
+
+We are using `useState` hook to initialize default state and we are passing the state to the Provider.
+
+We also define a new React component called `ActivityProvider` that returns `ActivityContext's` Provider.
+
+Finally we export both the `ActivityContext` and `ActivityProvider` components.
+
+### Updating the Context's state
+
+Let's import our context to `App` component as well as `ActivityList` (we will look into it shortly)
 
 ```jsx
 import React from "react"
-import ReactDOM from "react-dom"
-import App from "./App"
-import { BrowserRouter as Router } from "react-router-dom"
-import { RoomProvider } from "./context"
 
-ReactDOM.render(
-  <RoomProvider>
-    <Router>
-      <App />
-    </Router>
-  </RoomProvider>,
-  document.getElementById("root")
-)
+import ActivityList from "./ActivityList"
+import { ActivityProvider } from "./ActivityContext"
+
+const App = () => {
+  return (
+    <ActivityProvider>
+      <div className="container">
+        <ActivityList />
+      </div>
+    </ActivityProvider>
+  )
+}
+
+export default App
 ```
 
-https://www.youtube.com/watch?v=ScDWrogElmo 1h:46min
+Let's have a look how can we use our context and update the values from `ActivityList` components.
+
+```jsx
+import React from "react"
+
+import { ActivityContext } from "./ActivityContext"
+
+const ActivityList = () => {
+  const [state, setState] = useContext(ActivityContext)
+  return (
+    <>
+      {state.gymClasses.map((gymClass, index) => (
+        <div className="box">
+          <div className="class-title">
+            {gymClass.name}
+            <button onClick={() => setState(/* update your state */)}>
+              {gymClass.booked ? "Booked" : "Book"}
+            </button>
+          </div>
+        </div>
+      ))}
+    </>
+  )
+}
+
+export default ActivityList
+```
+
+As you can see, the process is stright forward when we want to interact with the context. This example is just a proof of concept and in real world scenario things will get a lot more messy. We will cover those cases in the future blog posts.
