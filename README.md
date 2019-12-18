@@ -6,7 +6,7 @@ Link - https://reacting.io
   </a>
 </p>
 <h1 align="center">
-  Aurimas's blog (using Gatsby)
+  Aurimas's blog
 </h1>
 
 ## 🧐 What's inside?
