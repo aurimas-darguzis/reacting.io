@@ -43,7 +43,7 @@ function Bio() {
               <OutboundLink href={`https://linkedin.com/${social.linkedIn}`}>
                 <strong> {author} </strong>
               </OutboundLink>
-              who lives and works in London building useful things.
+              who can help you to start your career in web development.
             </p>
           </div>
         )
